@@ -17,7 +17,7 @@
             --umb-gray: #747678;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: var(--umb-dark); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--umb-yellow); color: var(--umb-dark); }
 
         /* Custom Scrollbar */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
@@ -35,31 +35,12 @@
         .typing-dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* Markdown Styles - Adjusted for Black Text on White Bubble */
+        /* Markdown Styles */
         .prose p { margin-bottom: 0.75em; line-height: 1.6; color: #000; }
         .prose ul { list-style-type: disc; padding-left: 1.2em; margin-bottom: 0.75em; color: #000; }
         .prose strong { color: #000; font-weight: 800; }
         .prose a { color: #000; text-decoration: underline; text-underline-offset: 4px; decoration-thickness: 2px; decoration-color: var(--umb-yellow); }
         .prose a:hover { background-color: var(--umb-yellow); }
-
-        /* Clean Outline Design System */
-        .outline-box { 
-            border: 2px solid #e5e7eb; 
-            transition: all 0.2s ease; 
-        }
-        .outline-box:focus-within { 
-            border-color: var(--umb-dark); 
-            box-shadow: 0 0 0 1px var(--umb-dark);
-        }
-        
-        .outline-card { 
-            border: 1px solid #e5e7eb; 
-            transition: all 0.2s ease; 
-        }
-        .outline-card:hover { 
-            border-color: var(--umb-yellow); 
-            box-shadow: 0 4px 12px rgba(255, 205, 0, 0.15);
-        }
 
         /* Buttons */
         .btn-primary { 
@@ -74,224 +55,161 @@
             color: var(--umb-yellow);
         }
 
-        /* Active Nav State */
-        .nav-active {
-            background-color: var(--umb-dark) !important;
-            color: var(--umb-yellow) !important;
-            border-color: var(--umb-dark) !important;
-        }
-        
-        .nav-item:hover:not(.nav-active) {
-            background-color: #fcfcfc;
-            color: var(--umb-dark);
-            border-color: var(--umb-yellow);
-        }
-
-        .glass-header { background: rgba(255, 255, 255, 0.95); border-bottom: 1px solid #f3f4f6; }
-        
-        /* Text Highlighting */
-        .text-highlight { color: var(--umb-yellow); }
-        
-        /* Chat Background */
         .bg-umb-mustard { background-color: var(--umb-yellow); }
     </style>
 </head>
-<body class="h-screen flex overflow-hidden bg-white">
+<body class="h-screen flex flex-col overflow-hidden bg-umb-mustard">
 
-    <!-- SIDEBAR -->
-    <div class="w-[80px] md:w-64 bg-white flex-shrink-0 flex flex-col justify-between p-4 md:p-6 border-r border-gray-100 z-30">
-        <div>
-            <!-- Brand (Secret Login: Double Click) -->
-            <div class="flex items-center space-x-3 mb-12 cursor-pointer justify-center md:justify-start group" 
-                 onclick="showSection('chat-section')" 
+    <!-- MAIN CHAT AREA (Single View) -->
+    <div id="chat-section" class="flex-1 flex flex-col relative h-full">
+        
+        <!-- HEADER OVERLAY (Branding Top Left) -->
+        <div class="absolute top-0 left-0 w-full p-6 flex justify-between items-start z-30 pointer-events-none">
+            
+            <!-- Branding (Left) - Double Click for Admin -->
+            <div class="flex items-center gap-3 pointer-events-auto cursor-pointer group" 
                  ondblclick="checkAdminAccess()"
-                 title="Access Admin">
-                <div class="w-10 h-10 bg-umb-dark rounded-lg flex items-center justify-center text-umb-yellow font-extrabold text-[10px] border-2 border-umb-yellow shadow-[3px_3px_0px_0px_var(--umb-yellow)] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_var(--umb-yellow)] transition-all tracking-tighter">
+                 title="Smart UMB">
+                <div class="w-12 h-12 bg-umb-dark rounded-xl flex items-center justify-center text-umb-yellow font-extrabold text-sm border-2 border-umb-dark shadow-sm group-hover:shadow-lg transition-all">
                     UMB
                 </div>
-                <div class="hidden md:block">
-                    <h2 class="font-extrabold text-lg tracking-tight leading-tight text-umb-dark">Smart<br>UMB</h2>
+                <div>
+                    <h1 class="font-extrabold text-lg text-umb-dark leading-tight tracking-tight">Smart UMB</h1>
+                    <p class="text-[10px] font-bold text-umb-dark/60 uppercase tracking-widest">Your virtual banking assistant</p>
                 </div>
             </div>
-
-            <!-- Nav Items -->
-            <nav class="space-y-2">
-                <button onclick="showSection('chat-section')" id="nav-chat" class="nav-item w-full flex items-center space-x-3 px-3 md:px-4 py-3 rounded-lg transition border-2 border-transparent font-medium group text-gray-500">
-                    <i class="fas fa-comment-dots w-5 text-center"></i> 
-                    <span class="font-medium hidden md:block">Chat</span>
-                </button>
-                
-                <!-- Admin Button: HIDDEN BY DEFAULT -->
-                <button onclick="checkAdminAccess()" id="nav-admin" class="nav-item hidden w-full flex items-center space-x-3 px-3 md:px-4 py-3 rounded-lg transition border-2 border-transparent font-medium group text-gray-500">
-                    <i class="fas fa-database w-5 text-center"></i> 
-                    <span class="font-medium hidden md:block">Knowledge Base</span>
-                </button>
-            </nav>
         </div>
 
-        <!-- Footer -->
-        <div class="hidden md:block">
-            <div class="text-[10px] text-gray-300 text-center font-mono">
-                POWERED BY UMB
+        <!-- Chat Box -->
+        <div id="chat-box" class="flex-1 overflow-y-auto p-4 custom-scroll scroll-smooth pt-28">
+            <div class="max-w-2xl mx-auto space-y-8 pb-4">
+                
+                <!-- Welcome Message -->
+                <div class="text-center space-y-3 mb-8 anim-enter">
+                    <h2 class="text-3xl font-extrabold text-umb-dark tracking-tight drop-shadow-sm">Hello, I am SMART UMB</h2>
+                    <p class="text-umb-dark/80 text-base font-bold">How can we help you today?</p>
+                </div>
+
+                <!-- Message Container -->
+                <div id="messages-container" class="space-y-6"></div>
+
+            </div>
+        </div>
+
+        <!-- Input Area (Floating) -->
+        <div class="p-6 z-20">
+            <div class="max-w-2xl mx-auto relative">
+                <form onsubmit="event.preventDefault(); sendMessage();" class="relative group">
+                    <input type="text" id="user-input" 
+                        class="w-full bg-white text-umb-dark border-none rounded-2xl px-6 py-4 pr-14 focus:ring-4 focus:ring-umb-dark/20 outline-none text-base placeholder-gray-400 font-medium text-center shadow-lg transition-all"
+                        placeholder="Type your question..." autocomplete="off">
+                    
+                    <button type="submit" 
+                        class="absolute right-3 top-3 bottom-3 w-10 bg-umb-dark text-umb-yellow rounded-xl flex items-center justify-center hover:bg-black transition-all shadow-md transform hover:scale-105">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div class="flex-1 relative bg-white h-full overflow-hidden flex flex-col">
+    <!-- ADMIN DASHBOARD MODAL (Overlay) -->
+    <div id="admin-dashboard-modal" class="hidden fixed inset-0 bg-umb-dark/95 z-40 flex flex-col backdrop-blur-sm transition-opacity p-4 md:p-8">
         
-        <!-- SECTION: CHAT -->
-        <div id="chat-section" class="flex-1 flex flex-col relative h-full">
-            
-            <!-- Clean Header -->
-            <header class="h-16 glass-header flex items-center justify-center px-6 z-20">
-                <div class="flex items-center text-umb-dark font-bold text-sm tracking-widest uppercase">
-                    Smart UMB
+        <div class="bg-white rounded-2xl shadow-2xl flex-1 flex flex-col overflow-hidden max-w-6xl mx-auto w-full border-4 border-umb-yellow">
+            <!-- Admin Header -->
+            <header class="h-16 border-b border-gray-100 flex items-center justify-between px-6 bg-gray-50/50">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-8 bg-umb-yellow rounded-full"></div>
+                    <h2 class="text-lg font-bold text-umb-dark">Knowledge Base</h2>
                 </div>
-            </header>
-
-            <!-- Chat Area with Mustard Background -->
-            <div id="chat-box" class="flex-1 overflow-y-auto p-4 custom-scroll scroll-smooth bg-umb-mustard">
-                <div class="max-w-2xl mx-auto pt-16 pb-4 space-y-8">
-                    
-                    <!-- Intro -->
-                    <div class="text-center space-y-3 mb-16 anim-enter">
-                        <div class="w-16 h-16 bg-umb-dark rounded-full flex items-center justify-center text-umb-yellow text-xl font-bold mx-auto mb-4 border-4 border-white shadow-lg tracking-wider">
-                            UMB
-                        </div>
-                        <h1 class="text-3xl font-extrabold text-umb-dark tracking-tight drop-shadow-sm">Smart UMB</h1>
-                        <p class="text-umb-dark/80 text-sm font-bold">Your intelligent banking assistant.</p>
-                    </div>
-
-                    <!-- Bot Message Container -->
-                    <div id="messages-container" class="space-y-6 pb-10"></div>
-
-                </div>
-            </div>
-
-            <!-- Input Area -->
-            <div class="p-6 bg-white z-20">
-                <div class="max-w-2xl mx-auto relative">
-                    <form onsubmit="event.preventDefault(); sendMessage();" class="relative group outline-box rounded-lg bg-white">
-                        <input type="text" id="user-input" 
-                            class="w-full bg-transparent text-umb-dark border-none rounded-lg px-5 py-4 pr-14 focus:ring-0 focus:outline-none text-base placeholder-gray-400 font-medium"
-                            placeholder="Ask Smart UMB..." autocomplete="off">
-                        
-                        <button type="submit" 
-                            class="absolute right-3 top-3 bottom-3 w-10 bg-umb-dark text-umb-yellow rounded-md flex items-center justify-center hover:bg-black transition-all shadow-sm">
-                            <i class="fas fa-arrow-up"></i>
-                        </button>
-                    </form>
-                    <p class="text-center text-[10px] text-gray-300 mt-4 font-bold tracking-widest uppercase">UMB • You First</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION: ADMIN DASHBOARD (Hidden) -->
-        <div id="admin-section" class="hidden flex-1 flex flex-col h-full bg-white anim-enter">
-            
-            <!-- Dashboard Header -->
-            <header class="h-16 border-b border-gray-100 flex items-center justify-between px-8 z-20">
-                <h2 class="text-lg font-bold text-umb-dark">Knowledge Base</h2>
                 <div class="flex items-center gap-3">
-                    <button onclick="handleLogout()" class="text-gray-400 hover:text-umb-dark px-3 text-sm font-medium transition">Log Out</button>
-                    <button onclick="openEditor()" class="btn-primary px-4 py-2 rounded-md text-sm transition flex items-center gap-2">
-                        <i class="fas fa-plus"></i> Add Entry
+                    <button onclick="handleLogout()" class="text-gray-400 hover:text-red-500 text-sm font-bold transition px-3">Log Out</button>
+                    <button onclick="closeAdminDashboard()" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 transition">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             </header>
 
-            <!-- Dashboard Content -->
-            <div class="flex-1 overflow-y-auto p-8 custom-scroll bg-gray-50">
-                <!-- Search -->
-                <div class="max-w-6xl mx-auto mb-8">
-                    <div class="relative">
+            <!-- Admin Content -->
+            <div class="flex-1 overflow-y-auto p-6 custom-scroll bg-gray-50">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="relative flex-1 max-w-md">
                         <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" id="kb-search" onkeyup="filterKB()" placeholder="Search..." 
-                            class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-umb-yellow focus:ring-1 focus:ring-umb-yellow outline-none transition text-umb-dark font-medium">
+                        <input type="text" id="kb-search" onkeyup="filterKB()" placeholder="Search entries..." 
+                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-umb-yellow focus:ring-1 focus:ring-umb-yellow outline-none transition">
                     </div>
+                    <button onclick="openEditor()" class="btn-primary px-5 py-3 rounded-xl shadow-lg transition flex items-center gap-2 ml-4">
+                        <i class="fas fa-plus"></i> Add New
+                    </button>
                 </div>
 
                 <!-- Grid -->
-                <div id="kb-grid" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-10">
+                <div id="kb-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-10">
                     <!-- Cards injected here -->
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- MODALS -->
+    <!-- MODALS (Login & Edit) -->
 
-    <!-- Login/Register Modal -->
-    <div id="auth-modal" class="hidden fixed inset-0 bg-umb-dark/90 z-50 flex items-center justify-center backdrop-blur-sm transition-opacity p-4">
-        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-sm mx-4 border-2 border-umb-yellow">
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-umb-dark rounded-full flex items-center justify-center text-umb-yellow text-xl mx-auto mb-4 border-2 border-umb-yellow">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h3 class="text-xl font-bold text-umb-dark" id="auth-title">Admin Access</h3>
-                <p class="text-gray-400 text-sm mt-1" id="auth-subtitle">Secure Login</p>
+    <!-- Login Modal -->
+    <div id="auth-modal" class="hidden fixed inset-0 bg-umb-dark/95 z-50 flex items-center justify-center backdrop-blur-md p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm border-2 border-umb-yellow text-center">
+            <div class="w-12 h-12 bg-umb-dark rounded-full flex items-center justify-center text-umb-yellow text-xl mx-auto mb-4 border-2 border-umb-yellow">
+                <i class="fas fa-lock"></i>
             </div>
+            <h3 class="text-xl font-extrabold text-umb-dark mb-1" id="auth-title">Admin Access</h3>
+            <p class="text-gray-400 text-xs mb-6 font-bold uppercase tracking-wider" id="auth-subtitle">Secure Login</p>
             
             <form onsubmit="event.preventDefault(); handleAuth();" class="space-y-4">
-                <div>
-                    <input type="text" id="auth-user" required placeholder="Username"
-                        class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-umb-yellow outline-none transition">
-                </div>
-                <div>
-                    <input type="password" id="auth-pass" required placeholder="Password"
-                        class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-umb-yellow outline-none transition">
-                </div>
+                <input type="text" id="auth-user" required placeholder="Username" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-umb-yellow outline-none transition font-medium text-center text-umb-dark">
+                <input type="password" id="auth-pass" required placeholder="Password" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-umb-yellow outline-none transition font-medium text-center text-umb-dark">
                 
-                <button type="submit" id="auth-btn" class="btn-primary w-full py-3 rounded-lg transition mt-2">
-                    Access
-                </button>
-                <div class="flex justify-between items-center mt-3">
-                    <button type="button" id="auth-reset-btn" onclick="resetAuth()" class="text-xs text-red-400 hover:text-red-600 hidden transition">Reset Admin</button>
-                    <button type="button" onclick="closeAuth()" class="text-xs text-gray-400 hover:text-umb-dark transition ml-auto">Cancel</button>
+                <button type="submit" id="auth-btn" class="btn-primary w-full py-3.5 rounded-xl transition shadow-lg">Unlock</button>
+                
+                <div class="flex justify-between items-center mt-4 px-1">
+                    <button type="button" id="auth-reset-btn" onclick="resetAuth()" class="text-[10px] text-red-400 hover:text-red-600 font-bold hidden uppercase tracking-wide">Reset Account</button>
+                    <button type="button" onclick="closeAuth()" class="text-[10px] text-gray-400 hover:text-umb-dark font-bold ml-auto uppercase tracking-wide">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Edit/Create Modal -->
-    <div id="editor-modal" class="hidden fixed inset-0 bg-umb-dark/80 z-50 flex items-center justify-center backdrop-blur-sm transition-opacity p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 flex flex-col max-h-[90vh] border-t-4 border-umb-yellow">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center rounded-t-xl">
-                <h3 class="text-lg font-bold text-umb-dark" id="editor-title">Entry Details</h3>
-                <button onclick="closeEditor()" class="text-gray-400 hover:text-umb-dark transition">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Edit Entry Modal -->
+    <div id="editor-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-umb-dark" id="editor-title">Edit</h3>
+                <button onclick="closeEditor()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-black transition"><i class="fas fa-times"></i></button>
             </div>
             
             <div class="p-8 overflow-y-auto custom-scroll">
                 <form id="editor-form" onsubmit="event.preventDefault(); saveEntry();" class="space-y-5">
                     <input type="hidden" id="entry-id">
-                    
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Category</label>
-                            <input type="text" id="entry-category" required class="w-full px-4 py-2 rounded-md border border-gray-200 focus:border-umb-yellow outline-none">
+                            <input type="text" id="entry-category" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-umb-yellow outline-none font-medium">
                         </div>
                         <div>
                              <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Keywords</label>
-                             <input type="text" id="entry-keywords" required class="w-full px-4 py-2 rounded-md border border-gray-200 focus:border-umb-yellow outline-none">
+                             <input type="text" id="entry-keywords" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-umb-yellow outline-none font-medium">
                         </div>
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Response Content</label>
-                        <textarea id="entry-answer" rows="8" required class="w-full px-4 py-3 rounded-md border border-gray-200 focus:border-umb-yellow outline-none leading-relaxed"></textarea>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Answer</label>
+                        <textarea id="entry-answer" rows="8" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-umb-yellow outline-none leading-relaxed font-medium"></textarea>
                     </div>
                 </form>
             </div>
 
-            <div class="p-6 border-t border-gray-100 rounded-b-xl flex justify-between items-center bg-gray-50">
-                <button id="delete-btn" onclick="deleteEntry()" class="text-red-500 hover:text-red-700 font-medium text-sm hidden">Delete</button>
+            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-between">
+                <button id="delete-btn" onclick="deleteEntry()" class="text-red-500 hover:bg-red-50 px-4 py-2 rounded-lg font-bold text-sm hidden">Delete</button>
                 <div class="flex gap-3 ml-auto">
-                    <button type="button" onclick="closeEditor()" class="px-4 py-2 rounded-md border border-gray-200 text-gray-600 font-medium hover:bg-white transition">Cancel</button>
-                    <button onclick="document.getElementById('editor-form').requestSubmit()" class="btn-primary px-6 py-2 rounded-md transition">Save</button>
+                    <button type="button" onclick="closeEditor()" class="px-5 py-2.5 rounded-xl border border-gray-200 font-bold text-gray-500 hover:bg-white transition">Cancel</button>
+                    <button onclick="document.getElementById('editor-form').requestSubmit()" class="btn-primary px-6 py-2.5 rounded-xl shadow-lg transition">Save</button>
                 </div>
             </div>
         </div>
@@ -305,7 +223,6 @@
         const userInput = document.getElementById('user-input');
         
         // --- DATA ---
-        // Enhanced Default Data based on recent searches
         const defaultData = [
             { id: 1, category: 'General', keywords: ['history', 'founded', 'about'], answer: "Universal Merchant Bank (UMB) opened its doors on March 15, 1972. We are a leading indigenous Ghanaian bank, formerly known as 'Merchant Bank'. We have a rich history of advising on major events like the merger of Ashanti Goldfields and Anglogold." },
             { id: 2, category: 'Leadership', keywords: ['ceo', 'manager', 'leadership', 'boss'], answer: "As of late 2024, **Mr. Felix Apau Awuku** has been appointed as the Acting CEO of UMB Bank, following Bank of Ghana approval." },
@@ -325,7 +242,7 @@
         // --- AUTH LOGIC ---
         function checkAdminAccess() {
             if (isAdmin) {
-                showSection('admin-section');
+                openAdminDashboard();
                 return;
             }
 
@@ -353,48 +270,37 @@
             }
         }
 
-        function resetAuth() {
-            if(confirm("Are you sure? This will delete the current admin account and let you create a new one.")) {
-                localStorage.removeItem('umb_admin_creds');
-                checkAdminAccess();
-            }
-        }
-
         function handleAuth() {
             const user = document.getElementById('auth-user').value;
             const pass = document.getElementById('auth-pass').value;
             const modal = document.getElementById('auth-modal');
             const mode = modal.dataset.mode;
 
-            if (!user || !pass) {
-                alert("All fields required");
-                return;
-            }
+            if (!user || !pass) { alert("Fields required"); return; }
 
             if (mode === 'register') {
                 localStorage.setItem('umb_admin_creds', JSON.stringify({ user, pass }));
                 alert("Account created!");
                 isAdmin = true;
                 closeAuth();
-                revealAdminButton();
-                showSection('admin-section');
+                openAdminDashboard();
             } else {
                 const stored = JSON.parse(localStorage.getItem('umb_admin_creds'));
                 if (user === stored.user && pass === stored.pass) {
                     isAdmin = true;
                     closeAuth();
-                    revealAdminButton();
-                    showSection('admin-section');
+                    openAdminDashboard();
                 } else {
                     alert("Invalid credentials.");
                 }
             }
         }
 
-        function revealAdminButton() {
-            const btn = document.getElementById('nav-admin');
-            btn.classList.remove('hidden');
-            btn.classList.add('flex');
+        function resetAuth() {
+            if(confirm("Are you sure? This will delete the current admin account.")) {
+                localStorage.removeItem('umb_admin_creds');
+                checkAdminAccess();
+            }
         }
 
         function closeAuth() {
@@ -405,45 +311,23 @@
 
         function handleLogout() {
             isAdmin = false;
-            document.getElementById('nav-admin').classList.add('hidden');
-            document.getElementById('nav-admin').classList.remove('flex');
-            showSection('chat-section');
+            closeAdminDashboard();
+            alert("Logged out.");
         }
 
-        // --- NAVIGATION ---
-        function showSection(id) {
-            document.getElementById('chat-section').classList.add('hidden');
-            document.getElementById('admin-section').classList.add('hidden');
-            document.getElementById(id).classList.remove('hidden');
-            document.getElementById(id).classList.add('flex');
-
-            const navChat = document.getElementById('nav-chat');
-            const navAdmin = document.getElementById('nav-admin');
-            
-            navChat.className = "nav-item w-full flex items-center space-x-3 px-3 md:px-4 py-3 rounded-lg transition border-2 border-transparent font-medium group text-gray-500 hover:text-umb-dark hover:bg-gray-50";
-            navAdmin.className = "nav-item w-full flex items-center space-x-3 px-3 md:px-4 py-3 rounded-lg transition border-2 border-transparent font-medium group text-gray-500 hover:text-umb-dark hover:bg-gray-50";
-
-            if(id === 'chat-section') {
-                navChat.classList.add('nav-active');
-            } else {
-                navAdmin.classList.add('nav-active');
-                renderKBGrid();
-            }
+        // --- DASHBOARD LOGIC ---
+        function openAdminDashboard() {
+            document.getElementById('admin-dashboard-modal').classList.remove('hidden');
+            renderKBGrid();
         }
 
-        // --- CRUD / ADMIN ---
-        function saveToStorage() {
-            localStorage.setItem('umb_kb', JSON.stringify(db));
+        function closeAdminDashboard() {
+            document.getElementById('admin-dashboard-modal').classList.add('hidden');
         }
 
-        function resetToDefaults() {
-            if(confirm('Reset database?')) {
-                db = [...defaultData];
-                saveToStorage();
-                renderKBGrid();
-            }
-        }
-
+        // --- CRUD ---
+        function saveToStorage() { localStorage.setItem('umb_kb', JSON.stringify(db)); }
+        
         function filterKB() {
             const term = document.getElementById('kb-search').value.toLowerCase();
             renderKBGrid(term);
@@ -452,7 +336,6 @@
         function renderKBGrid(filterTerm = '') {
             const grid = document.getElementById('kb-grid');
             grid.innerHTML = '';
-            
             const filtered = db.filter(item => 
                 item.keywords.join(' ').includes(filterTerm) || 
                 item.category.toLowerCase().includes(filterTerm) ||
@@ -461,21 +344,18 @@
 
             filtered.forEach(item => {
                 const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-lg outline-card cursor-pointer relative flex flex-col h-full";
+                card.className = "bg-white p-6 rounded-2xl border border-gray-100 hover:border-umb-yellow shadow-sm hover:shadow-md transition cursor-pointer flex flex-col h-full group";
                 card.onclick = () => openEditor(item.id);
-                
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-3">
-                        <span class="bg-gray-50 text-gray-600 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border border-gray-100">
+                        <span class="bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md">
                             ${item.category}
                         </span>
-                        <i class="fas fa-edit text-gray-300"></i>
+                        <i class="fas fa-pencil-alt text-gray-300 group-hover:text-umb-dark transition"></i>
                     </div>
                     <h4 class="font-bold text-umb-dark mb-2 truncate">${item.keywords[0]}</h4>
-                    <p class="text-xs text-gray-500 line-clamp-3 mb-4 flex-1">${item.answer}</p>
-                    <div class="text-[10px] text-gray-300 font-mono mt-auto pt-3 border-t border-gray-50">
-                        ID: ${item.id}
-                    </div>
+                    <p class="text-xs text-gray-500 line-clamp-3 mb-4 flex-1 leading-relaxed">${item.answer}</p>
+                    <div class="text-[10px] text-gray-300 font-mono mt-auto pt-3 border-t border-gray-50">ID: ${item.id}</div>
                 `;
                 grid.appendChild(card);
             });
@@ -502,9 +382,7 @@
             modal.classList.remove('hidden');
         }
 
-        function closeEditor() {
-            document.getElementById('editor-modal').classList.add('hidden');
-        }
+        function closeEditor() { document.getElementById('editor-modal').classList.add('hidden'); }
 
         function saveEntry() {
             const category = document.getElementById('entry-category').value;
@@ -518,7 +396,6 @@
             } else {
                 db.unshift({ id: Date.now(), category, keywords, answer });
             }
-
             saveToStorage();
             closeEditor();
             renderKBGrid();
@@ -533,28 +410,27 @@
             }
         }
 
-        // --- CHAT LOGIC ---
-
+        // --- CHAT ---
         function appendMessage(sender, text, isUser = false) {
             const div = document.createElement('div');
             div.className = `flex ${isUser ? 'justify-end' : 'justify-start'} anim-enter`;
             
             if (isUser) {
-                // User Message: Dark Grey bubble, White text
+                // User: Dark Grey bubble, White text
                 div.innerHTML = `
-                    <div class="bg-umb-dark text-white px-4 py-3 rounded-2xl rounded-br-none max-w-[85%] text-sm font-medium shadow-md border-2 border-transparent">
+                    <div class="bg-umb-dark text-white px-5 py-3 rounded-2xl rounded-br-none max-w-[85%] text-sm font-medium shadow-md">
                         ${text}
                     </div>
                 `;
             } else {
-                // Bot Message: White bubble, Black text
+                // Bot: White bubble, Black text
                 const parsed = marked.parse(text);
                 div.innerHTML = `
                     <div class="flex items-start max-w-full md:max-w-[85%]">
-                        <div class="w-8 h-8 bg-umb-dark rounded-full flex items-center justify-center text-umb-yellow text-[10px] font-bold mr-3 flex-shrink-0 mt-1 border-2 border-white shadow-sm">
+                        <div class="w-8 h-8 bg-umb-dark rounded-full flex items-center justify-center text-umb-yellow text-[10px] font-bold mr-3 flex-shrink-0 mt-1 shadow-sm border-2 border-white">
                             UMB
                         </div>
-                        <div class="bg-white text-black px-4 py-3 rounded-2xl rounded-tl-none text-sm leading-relaxed prose prose-sm shadow-lg border-2 border-white">
+                        <div class="bg-white text-black px-5 py-4 rounded-2xl rounded-tl-none text-sm leading-relaxed prose prose-sm shadow-md">
                             ${parsed}
                         </div>
                     </div>
@@ -571,7 +447,7 @@
             div.className = 'flex justify-start anim-enter';
             div.innerHTML = `
                 <div class="flex items-center ml-12">
-                     <div class="bg-white px-4 py-3 rounded-2xl rounded-tl-none flex space-x-1 shadow-lg">
+                     <div class="bg-white px-4 py-3 rounded-2xl rounded-tl-none flex space-x-1 shadow-md">
                         <div class="w-1.5 h-1.5 bg-umb-dark rounded-full typing-dot"></div>
                         <div class="w-1.5 h-1.5 bg-umb-dark rounded-full typing-dot"></div>
                         <div class="w-1.5 h-1.5 bg-umb-dark rounded-full typing-dot"></div>
@@ -590,19 +466,15 @@
         async function getGeminiResponse(userQuery) {
             const knowledgeString = JSON.stringify(db.map(x => ({ keywords: x.keywords, answer: x.answer })));
             const systemPrompt = `You are "Smart UMB", the official AI assistant for Universal Merchant Bank (Ghana). 
-            Your slogan is "You First".
-            Your tone is professional, intelligent, and helpful.
             
-            KNOWLEDGE BASE (Tier 1 Priority):
+            KNOWLEDGE BASE (Priority 1):
             ${knowledgeString}
 
             INSTRUCTIONS:
-            1. **HIERARCHY OF TRUTH:** Your absolute sources of truth are the **Local Knowledge Base** (provided above) and the **Official UMB Website (myumbbank.com)**.
-            2. **Step 1:** Check the 'KNOWLEDGE BASE' first. If the answer is there, USE IT.
-            3. **Step 2:** If the answer is NOT in the Knowledge Base, use Google Search. When analyzing search results, **you must prioritize information found on 'myumbbank.com'**. Treat the official website as the definitive source for products, rates, and management info if the Knowledge Base is silent.
-            4. If the user asks for a document (letter, email), draft it professionally.
-            5. Always be polite and embody the "You First" philosophy.
-            6. Use Markdown formatting (bold, lists) for readability.
+            1. **HIERARCHY:** Check the Knowledge Base first. If the answer is there, USE IT verbatim.
+            2. If not in the Knowledge Base, use Google Search to find answers on **https://www.myumbbank.com/**.
+            3. Draft letters professionally if asked.
+            4. Be polite, concise, and helpful.
             `;
 
             try {
@@ -611,7 +483,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: userQuery }] }],
-                        tools: [{ google_search: {} }], // Enable Search Grounding
+                        tools: [{ google_search: {} }],
                         systemInstruction: { parts: [{ text: systemPrompt }] }
                     })
                 });
@@ -656,11 +528,6 @@
 
             removeTyping();
             appendMessage('Smart UMB', response, false);
-        }
-
-        function startLoanLetterDrafting() {
-            userInput.value = "Draft a loan application letter for... ";
-            userInput.focus();
         }
     </script>
 </body>
