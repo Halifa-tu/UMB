@@ -199,7 +199,7 @@
 
     <!-- LOGIC -->
     <script>
-        const apiKey = "AIzaSyC6TYdda_6cDmfVLcbx9_Y6veB5N-a3sWg"; // Provided by environment
+        const apiKey = "AIzaSyC6TYdda_6cDmfVLcbx9_Y6veB5N-a3sWg"; // gemini api
         const chatBox = document.getElementById('chat-box');
         const msgContainer = document.getElementById('messages-container');
         const userInput = document.getElementById('user-input');
@@ -406,7 +406,7 @@
             ${knowledgeString}
 
             INSTRUCTIONS:
-            1. **HIERARCHY:** Check the Knowledge Base first. If the answer is there, USE IT.
+            1. **HIERARCHY:** Use gemini api first. Check the Knowledge Base first. If the answer is there, USE IT verbatim.
             2. If not in the Knowledge Base, use Google Search to find answers on **https://www.myumbbank.com**.
             3. Be polite, concise, and helpful.
             `;
@@ -464,4 +464,5 @@
         }
     </script>
 </body>
+
 </html>
